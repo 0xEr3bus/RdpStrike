@@ -4,11 +4,16 @@ The `RdpStrike` is basically a mini project I built to dive deep into Positional
 
 When the aggressor script is loaded on CobaltStrike, three new commands will be available:
 
-`rdpstrike_enable`   – Enables the `heartbeat` check of new mstsc.exe processes and injects into them.
-`rdpstrike_disable`  – Disables the `heartbeat` check of new mstsc.exe but is not going to remove the hooks and free the shellcode.
-`rdpstrike_dump`     – Reads the file and prints the extracted credentials if any.
+`rdpstrike_enable`   - Enables the `heartbeat` check of new mstsc.exe processes and injects into them.<br>
+`rdpstrike_disable`  - Disables the `heartbeat` check of new mstsc.exe but is not going to remove the hooks and free the shellcode.<br>
+`rdpstrike_dump`     - Reads the file and prints the extracted credentials if any.<br>
 
 ### Demo
+
+![Demo](https://github.com/0xEr3bus/RdpStrike/assets/71999752/32913a7d-2c45-4fed-80ef-277ab5776ddf)
+
+https://github.com/0xEr3bus/RdpStrike/assets/71999752/65e99cdb-f74a-45f3-ac92-456d09b02a2c
+
 
 
 
